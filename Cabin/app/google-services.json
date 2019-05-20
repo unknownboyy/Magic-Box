@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "473007634158",
+    "firebase_url": "https://cabin-34fc5.firebaseio.com",
+    "project_id": "cabin-34fc5",
+    "storage_bucket": "cabin-34fc5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:473007634158:android:9276b7b608a5607a",
+        "android_client_info": {
+          "package_name": "com.example.cabin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "473007634158-haqhl1ngbrfqt09sc5hnodo77frispja.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cabin",
+            "certificate_hash": "8981732072350e4179014a718e74c8386db39f65"
+          }
+        },
+        {
+          "client_id": "473007634158-tmo28tpj7kf7djhga0matmbi01fnn0ns.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQ1kNKJREAArO57Bw7Tu9Zl9_KzRT-3VE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "473007634158-tmo28tpj7kf7djhga0matmbi01fnn0ns.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

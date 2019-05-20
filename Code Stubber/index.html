@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Code Stubber</title>
+</head>
+<body>
+
+<textarea cols="100" rows="15" id="word"></textarea>
+<br>
+<button id="python">Python</button>
+<button id="cpp">Cpp</button>
+<button id="c">C</button>
+<button id="java">Java</button>
+<br>
+<textarea cols="100" rows="15" id="word2"></textarea>
+
+<script src="jquery-3.3.1.js"></script>
+<script>
+    $(document).ready(function () {
+        function generatePython(string){
+            string = string.split('\n');
+            var code='';
+            var code_upper='';
+            var line;
+            var loop=0;
+            var loop_var = {0:'i',1:'j',2:'k',3:'l',4:'m',5:'m'};
+            for(var i=0;i<string.length;++i){
+                line = string[i];
+                code += '\t'.repeat(loop);
+
+                // Reading Normal Variable
+                if (line.substring(0,4) === 'char'){
+                    code += line.substring(5,line.length-1) + ' = input()'+ '\n';
+                } else if (line.substring(0,4) === 'bool'){
+                    code += line.substring(5,line.length-1) + ' = bool(input())'+ '\n';
+                } else if (line.substring(0,3) === 'int'){
+                    code += line.substring(4,line.length-1) + ' = int(input())'+ '\n';
+                } else if (line.substring(0,5) === 'float'){
+                    code += line.substring(6,line.length-1) + ' = float(input())'+ '\n';
+                } else if (line.substring(0,4) === 'long'){
+                    code += line.substring(5,line.length-1) + ' = int(input())'+ '\n';
+                } else if (line.substring(0,6) === 'string'){
+                    code += line.substring(7,line.length-1) + ' = input()'+ '\n';
+                } else if (line.substring(0,6) === 'double'){
+                    code += line.substring(7,line.length-1) + ' = float(input())'+ '\n';
+
+                    // Printing Variable
+                } else if (line.substring(0,5) === 'print'){
+                    var word = line.substring(6,line.length-1).split(',');
+                    if (word[0] === 'char') code += 'print('+word[1]+')'+ '\n';
+                    else if (word[0] === 'int') code += 'print('+word[1]+')'+ '\n';
+                    else if (word[0] === 'bool') code += 'print('+word[1]+')'+'\n';
+                    else if (word[0] === 'float') code += 'print('+word[1]+')'+ '\n';
+                    else if (word[0] === 'double') code += 'print('+word[1]+')'+ '\n';
+                    else if (word[0] === 'long') code += 'print('+word[1]+')'+ '\n';
+                    else if (word[0] === 'string') code += 'print('+word[1]+')'+ '\n';
+                    else if (word[0] === 'array') code += 'print(*'+word[3]+')'+ '\n';
+                    else if (word[0] === '2darray') {
+                        code += 'for i in '+word[4]+':\n\t';
+                        code+='print(*i)';
+                        code += '\n';
+                    }
+
+                    //  Reading Array
+                } else if (line.substring(0,5) === 'array'){
+                    var word = line.substring(6,line.length-1).split(',');
+                    code+= word[2]+' = ['+word[0]+'(i) for i in input().strip().split()]';
+                    code += '\n';
+                } else if (line.substring(0,7) === '2darray'){
+                    var word = line.substring(8,line.length-1).split(',');
+                    code += word[3]+' = []\n';
+                    code += 'for i in range('+word[1]+'):\n\t';
+                    code += word[3]+'.append(['+word[0]+'(i) for i in input().strip().split()])';
+                    code += '\n';
+                } else if (line.substring(0,8) === 'function'){
+                    var word = line.substring(9,line.length-1).split(',');
+
+                    if (word[0] === 'void'){
+                        code_upper += 'def '+word[1]+'(';
+                        var i;
+                        for(i=3;i<word.length-1;i+=2) code_upper += word[i]+',';
+                        code_upper += word[i];
+                        code_upper += '):\n\t#Enter Your Code Here';
+                    } else{
+                        code_upper += 'def '+word[2]+'(';
+                        var i;
+                        for(i=4;i<word.length-1;i+=2) code_upper += word[i]+',';
+                        code_upper += word[i];
+                        code_upper += '):\n\t#Enter Your Code Here\n\t';
+                        code_upper += 'return '+word[1];
+                    }
+                    code_upper += '\n';
+
+                } else if (line.substring(0,4) === 'loop'){
+                    var word = line.substring(5,line.length-1).split(',');
+                    code += 'for '+loop_var[loop]+' in range('+word[0]+'):\n';
+                    loop++;
+                } else if (line.substring(0,6) === 'invoke'){
+                    var word = line.substring(7,line.length-1).split(',');
+                    if (word[0] === 'void'){
+                        code += word[1]+'(';
+                        var i;
+                        for (i=2;i<word.length-1;++i) code +=  word[i]+',';
+                        code += word[i]+')';
+                    } else {
+                        code += word[1]+' = '+word[2]+'(';
+                        var i;
+                        for (i=3;i<word.length-1;++i) code +=  word[i]+',';
+                        code += word[i]+')';
+                    }
+                    code += '\n';
+
+                } else if (line === 'endloop'){
+                    loop--;
+                    code += '\r\n';
+                }
+            }
+            return code_upper + code;
+        }
+        function generateC(string){
+            string = string.split('\n');
+            var code='int main() {\n';
+            var code_upper='#include<stdio.h>\n#include<string.h>\n';
+            var line;
+            var loop=0;
+            var loop_var = {0:'i',1:'j',2:'k',3:'l',4:'m',5:'m'};
+            for(var i=0;i<string.length;++i){
+                line = string[i];
+                code += '\t'.repeat(loop);
+
+                // Reading Normal Variable
+                if (line.substring(0,4) === 'char'){
+                    code += 'char '+line.substring(5,line.length-1)+';\n'+'\t'.repeat(loop)+ 'scanf("%c", &'+ line.substring(5,line.length-1) + ');'+ '\n';
+                } else if (line.substring(0,4) === 'bool'){
+                    code += 'bool '+line.substring(5,line.length-1)+';\n'+'\t'.repeat(loop)+   'scanf("%d", &'+ line.substring(5,line.length-1) + ');'+ '\n';
+                } else if (line.substring(0,3) === 'int'){
+                    code += 'int '+line.substring(4,line.length-1)+';\n'+'\t'.repeat(loop)+   'scanf("%d", &'+ line.substring(4,line.length-1) + ');'+ '\n';
+                } else if (line.substring(0,5) === 'float'){
+                    code += 'float '+line.substring(6,line.length-1)+';\n'+'\t'.repeat(loop)+   'scanf("%f", &'+ line.substring(6,line.length-1) + ');'+ '\n';
+                } else if (line.substring(0,4) === 'long'){
+                    code += 'long '+line.substring(5,line.length-1)+';\n'+'\t'.repeat(loop)+   'scanf("%ld", &'+ line.substring(5,line.length-1) + ');'+ '\n';
+                } else if (line.substring(0,6) === 'string'){
+                    code += 'char '+line.substring(7,line.length-1)+'[100000];\n'+'\t'.repeat(loop)+   'scanf("%s", '+ line.substring(7,line.length-1) + ');'+ '\n';
+                } else if (line.substring(0,6) === 'double'){
+                    code += 'double '+line.substring(7,line.length-1)+';\n'+  'scanf("%Lf", &'+ line.substring(7,line.length-1) + ');'+ '\n';
+
+                    // Printing Variable
+                } else if (line.substring(0,5) === 'print'){
+                    var word = line.substring(6,line.length-1).split(',');
+                    if (word[0] === 'char') code += 'printf("%c",'+word[1]+');'+ '\n';
+                    else if (word[0] === 'int') code += 'printf("%d",'+word[1]+');'+ '\n';
+                    else if (word[0] === 'bool')code += 'printf("%d",'+word[1]+');'+ '\n';
+                    else if (word[0] === 'float') code += 'printf("%f",'+word[1]+');'+ '\n';
+                    else if (word[0] === 'double') code += 'printf("%Lf",'+word[1]+');'+ '\n';
+                    else if (word[0] === 'long') code += 'printf("%ld",'+word[1]+');'+ '\n';
+                    else if (word[0] === 'string') code += 'printf("%s",'+word[1]+');'+ '\n';
+
+                    else if (word[0] === 'array') {
+                        // Print(array,datatype,size,variablename)
+                        code += 'for(int i=0 ; i < '+word[2]+' ;++i){\n\t';
+                        if (word[1] === 'char') code += 'printf("%c",'+word[3]+'[i]);'+ '\n';
+                        else if (word[1] === 'int') code += 'printf("%d",'+word[3]+'[i]);'+ '\n';
+                        else if (word[1] === 'bool')code += 'printf("%d",'+word[3]+'[i]);'+ '\n';
+                        else if (word[1] === 'float') code += 'printf("%f",'+word[3]+'[i]);'+ '\n';
+                        else if (word[1] === 'double') code += 'printf("%Lf",'+word[3]+'[i]);'+ '\n';
+                        else if (word[1] === 'long') code += 'printf("%ld",'+word[3]+'[i]);'+ '\n';
+                        else if (word[1] === 'string') code += 'printf("%s",'+word[3]+'[i]);'+ '\n';
+                        code += '}\n';
+                    }
+                    else if (word[0] === '2darray') {
+                        //  Print(2darray,datatype,row,col,variablename)
+                        code += 'for(int i=0 ; i < '+word[2]+' ; ++i ){\n\t';
+                        code += 'for(int j=0 ; j < '+word[3]+' ; ++j ){\n\t\t';
+                        if (word[1] === 'char') code += 'printf("%c",'+word[4]+'[i][j]);'+ '\n';
+                        else if (word[1] === 'int') code += 'printf("%d",'+word[4]+'[i][j]);'+ '\n';
+                        else if (word[1] === 'bool')code += 'printf("%d",'+word[4]+'[i][j]);'+ '\n';
+                        else if (word[1] === 'float') code += 'printf("%f",'+word[4]+'[i][j]);'+ '\n';
+                        else if (word[1] === 'double') code += 'printf("%Lf",'+word[4]+'[i][j]);'+ '\n';
+                        else if (word[1] === 'long') code += 'printf("%ld",'+word[4]+'[i][j]);'+ '\n';
+                        else if (word[1] === 'string') code += 'printf("%s",'+word[4]+'[i][j]);'+ '\n';
+                        code += '\t}\n';
+                        code += '}\n';
+
+                    }
+
+                    //  Reading Array
+                } else if (line.substring(0,5) === 'array'){
+                    var word = line.substring(6,line.length-1).split(',');
+                    // Array(datatype,size,variablename)
+                    // declare variable
+                    if (word[0] === 'char') code += 'char '+word[2]+'['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'int') code += 'int '+word[2]+'['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'bool') code += 'bool '+word[2]+'['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'float') code += 'float '+word[2]+'['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'double') code += 'double '+word[2]+'['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'long') code += 'long '+word[2]+'['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'string') code += 'char '+word[2]+'['+word[1]+'][10000];'+'\n'+'\t'.repeat(loop);
+
+
+                    // for input loop
+                    code += 'for(int i=0 ; i < '+word[1]+' ; ++i ){\n\t'+'\t'.repeat(loop);
+                    if (word[0] === 'char') code += 'scanf("%c",&'+word[2]+'[i]);'+ '\n';
+                    else if (word[0] === 'int') code += 'scanf("%d",&'+word[2]+'[i]);'+ '\n';
+                    else if (word[0] === 'bool')code += 'scanf("%d",&'+word[2]+'[i]);'+ '\n';
+                    else if (word[0] === 'float') code += 'scanf("%f",&'+word[2]+'[i]);'+ '\n';
+                    else if (word[0] === 'double') code += 'scanf("%Lf",&'+word[2]+'[i]);'+ '\n';
+                    else if (word[0] === 'long') code += 'scanf("%ld",&'+word[2]+'[i]);'+ '\n';
+                    else if (word[0] === 'string') code += 'scanf("%s",'+word[2]+'[i]);'+ '\n';
+                    code += '\t'.repeat(loop)+ '}\n';
+
+                } else if (line.substring(0,7) === '2darray'){
+                    var word = line.substring(8,line.length-1).split(',');
+
+
+                    // 2dArray(datatype,row,col,variablename)
+                    // declare variable
+                    if (word[0] === 'char') code += 'char '+word[3]+'['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'int') code += 'int '+word[3]+'['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'bool') code += 'bool '+word[3]+'['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'float') code += 'float '+word[3]+'['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'double') code += 'double '+word[3]+'['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'long') code += 'long '+word[3]+'['+word[1]+']['+word[2]+'];\n';
+                    else if (word[0] === 'string') code += 'char '+word[3]+'['+word[1]+']['+word[2]+'][10000];'+'\n'+'\t'.repeat(loop);
+
+
+                    // for input loop
+                    code += 'for(int i=0 ; i < '+word[1]+' ; ++i ){\n\t'+'\t'.repeat(loop);
+                    code += 'for(int j=0 ; j < '+word[2]+' ; ++j ){\n\t\t'+'\t'.repeat(loop);
+                    if (word[0] === 'char') code += 'scanf("%c",&'+word[2]+'[i][j]);'+ '\n';
+                    else if (word[0] === 'int') code += 'scanf("%d",&'+word[2]+'[i][j]);'+ '\n';
+                    else if (word[0] === 'bool')code += 'scanf("%d",&'+word[2]+'[i][j]);'+ '\n';
+                    else if (word[0] === 'float') code += 'scanf("%f",&'+word[2]+'[i][j]);'+ '\n';
+                    else if (word[0] === 'double') code += 'scanf("%Lf",&'+word[2]+'[i][j]);'+ '\n';
+                    else if (word[0] === 'long') code += 'scanf("%ld",&'+word[2]+'[i][j]);'+ '\n';
+                    else if (word[0] === 'string') code += 'scanf("%s",'+word[2]+'[i][j]);'+ '\n';
+                    code += '\t'.repeat(loop)+ '\t}\n';
+                    code += '\t'.repeat(loop)+ '}\n';
+
+
+
+                } else if (line.substring(0,8) === 'function'){
+                    var word = line.substring(9,line.length-1).split(',');
+                    // Function(returntype,return-variable,name,param1-type,param1-name,param2-type,param2-name ….)
+
+                    if (word[0] === 'void'){
+                        code_upper += 'void '+word[1]+'(';
+                        var i;
+                        for(i=2;i<word.length-2;i+=2) code_upper += word[i]+' '+word[i+1]+', ';
+                        code_upper += word[i]+' '+word[i+1];
+                        code_upper += '){\n\t//Enter Your Code Here\n}';
+                    } else{
+                        code_upper += word[0]+' '+word[2]+'(';
+                        var i;
+                        for(i=3;i<word.length-2;i+=2) code_upper += word[i]+' '+word[i+1]+', ';
+                        code_upper += word[i]+' '+word[i+1];
+                        code_upper += '){\n\t//Enter Your Code Here\n\treturn '+word[1]+';\n}';
+                    }
+                    code_upper += '\n';
+
+                } else if (line.substring(0,4) === 'loop'){
+                    var word = line.substring(5,line.length-1).split(',');
+                    code += 'for(int '+loop_var[loop]+' = 0; '+loop_var[loop]+' < '+word[0]+' ; ++'+loop_var[loop]+' ){\n';
+                    loop++;
+                } else if (line.substring(0,6) === 'invoke'){
+                    var word = line.substring(7,line.length-1).split(',');
+                    if (word[0] === 'void'){
+                        code += word[1]+'(';
+                        var i;
+                        for (i=2;i<word.length-1;++i) code +=  word[i]+',';
+                        code += word[i]+');';
+                    } else {
+                        code += word[0] +' ' +word[1]+' = '+word[2]+'(';
+                        var i;
+                        for (i=3;i<word.length-1;++i) code +=  word[i]+',';
+                        code += word[i]+');';
+                    }
+                    code += '\n';
+
+                } else if (line === 'endloop'){
+                    loop--;
+                    code += '\r'+'\t'.repeat(loop)+'}\n';
+
+                }
+            }
+            return code_upper + code + 'return 0;\n}';
+        }
+        function generateCpp(string){
+            string = string.split('\n');
+            var code='int main() {\n';
+            var code_upper='#include<iostream>\n#include<bits/stdc++.h>\nusing namespace std;\n';
+            var line;
+            var loop=0;
+            var loop_var = {0:'i',1:'j',2:'k',3:'l',4:'m',5:'m'};
+            for(var i=0;i<string.length;++i){
+                line = string[i];
+                code += '\t'.repeat(loop);
+
+                // Reading Normal Variable
+                if (line.substring(0,4) === 'char'){
+                    code += 'char '+line.substring(5,line.length-1)+';\n'+'\t'.repeat(loop)+   'cin>>'+ line.substring(5,line.length-1) + ';'+ '\n';
+                } else if (line.substring(0,4) === 'bool'){
+                    code += 'bool '+line.substring(5,line.length-1)+';\n'+'\t'.repeat(loop)+   'cin>>'+ line.substring(5,line.length-1) + ';'+ '\n';
+                } else if (line.substring(0,3) === 'int'){
+                    code += 'int '+line.substring(4,line.length-1)+';\n'+'\t'.repeat(loop)+   'cin>>'+ line.substring(4,line.length-1) + ';'+ '\n';
+                } else if (line.substring(0,5) === 'float'){
+                    code += 'float '+line.substring(6,line.length-1)+';\n'+'\t'.repeat(loop)+   'cin>>'+ line.substring(6,line.length-1) + ';'+ '\n';
+                } else if (line.substring(0,4) === 'long'){
+                    code += 'long '+line.substring(5,line.length-1)+';\n'+'\t'.repeat(loop)+   'cin>>'+ line.substring(5,line.length-1) + ';'+ '\n';
+                } else if (line.substring(0,6) === 'string'){
+                    code += 'string '+line.substring(7,line.length-1)+';\n'+'\t'.repeat(loop)+   'cin>>'+ line.substring(7,line.length-1) + ';'+ '\n';
+                } else if (line.substring(0,6) === 'double'){
+                    code += 'double '+line.substring(7,line.length-1)+';\n'+'\t'.repeat(loop)+   'cin>>'+ line.substring(7,line.length-1) + ';'+ '\n';
+
+                    // Printing Variable
+                } else if (line.substring(0,5) === 'print'){
+                    var word = line.substring(6,line.length-1).split(',');
+                    if (word[0] === 'char') code += 'cout<<'+word[1]+';'+ '\n';
+                    else if (word[0] === 'int') code += 'cout<<'+word[1]+';'+ '\n';
+                    else if (word[0] === 'bool')code += 'cout<<'+word[1]+';'+ '\n';
+                    else if (word[0] === 'float') code += 'cout<<'+word[1]+';'+ '\n';
+                    else if (word[0] === 'double') code += 'cout<<'+word[1]+';'+ '\n';
+                    else if (word[0] === 'long') code += 'cout<<'+word[1]+';'+ '\n';
+                    else if (word[0] === 'string') code += 'cout<<'+word[1]+';'+ '\n';
+
+                    else if (word[0] === 'array') {
+                        // Print(array,datatype,size,variablename)
+                        code += 'for(int i=0 ; i < '+word[2]+' ;++i){\n\t';
+                        if (word[1] === 'char') code += 'cout<<'+word[3]+'[i];'+ '\n';
+                        else if (word[1] === 'int') code += 'cout<<'+word[3]+'[i];'+ '\n';
+                        else if (word[1] === 'bool') code += 'cout<<'+word[3]+'[i];'+ '\n';
+                        else if (word[1] === 'float') code += 'cout<<'+word[3]+'[i];'+ '\n';
+                        else if (word[1] === 'double') code += 'cout<<'+word[3]+'[i];'+ '\n';
+                        else if (word[1] === 'long') code += 'cout<<'+word[3]+'[i];'+ '\n';
+                        else if (word[1] === 'string') code += 'cout<<'+word[3]+'[i];'+ '\n';
+                        code += '}\n';
+                    }
+                    else if (word[0] === '2darray') {
+                        //  Print(2darray,datatype,row,col,variablename)
+                        code += 'for(int i=0 ; i < '+word[2]+' ; ++i ){\n\t';
+                        code += 'for(int j=0 ; j < '+word[3]+' ; ++j ){\n\t\t';
+                        if (word[1] === 'char') code += 'cout<<'+word[4]+'[i][j];'+ '\n';
+                        else if (word[1] === 'int') code += 'cout<<'+word[4]+'[i][j];'+ '\n';
+                        else if (word[1] === 'bool') code += 'cout<<'+word[4]+'[i][j];'+ '\n';
+                        else if (word[1] === 'float') code += 'cout<<'+word[4]+'[i][j];'+ '\n';
+                        else if (word[1] === 'double') code += 'cout<<'+word[4]+'[i][j];'+ '\n';
+                        else if (word[1] === 'long') code += 'cout<<'+word[4]+'[i][j];'+ '\n';
+                        else if (word[1] === 'string') code += 'cout<<'+word[4]+'[i][j];'+ '\n';
+                        code += '\t}\n';
+                        code += '}\n';
+
+                    }
+
+                    //  Reading Array
+                } else if (line.substring(0,5) === 'array'){
+                    var word = line.substring(6,line.length-1).split(',');
+                    // Array(datatype,size,variablename)
+                    // declare variable
+                    if (word[0] === 'char') code += 'char '+word[2]+'['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'int') code += 'int '+word[2]+'['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'bool') code += 'bool '+word[2]+'['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'float') code += 'float '+word[2]+'['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'double') code += 'double '+word[2]+'['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'long') code += 'long '+word[2]+'['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'string') code += 'char '+word[2]+'['+word[1]+'][10000];'+'\n'+'\t'.repeat(loop);
+
+
+                    // for input loop
+                    code += 'for(int i=0 ; i < '+word[1]+' ; ++i ){\n\t'+'\t'.repeat(loop);
+                    if (word[0] === 'char') code += 'cin>>'+word[2]+'[i];'+ '\n';
+                    else if (word[0] === 'int') code += 'cin>>'+word[2]+'[i];'+ '\n';
+                    else if (word[0] === 'bool') code += 'cin>>'+word[2]+'[i];'+ '\n';
+                    else if (word[0] === 'float') code += 'cin>>'+word[2]+'[i];'+ '\n';
+                    else if (word[0] === 'double') code += 'cin>>'+word[2]+'[i];'+ '\n';
+                    else if (word[0] === 'long') code += 'cin>>'+word[2]+'[i];'+ '\n';
+                    else if (word[0] === 'string') code += 'cin>>'+word[2]+'[i];'+ '\n';
+                    code += '\t'.repeat(loop)+ '}\n';
+
+                } else if (line.substring(0,7) === '2darray'){
+                    var word = line.substring(8,line.length-1).split(',');
+
+
+                    // 2dArray(datatype,row,col,variablename)
+                    // declare variable
+                    if (word[0] === 'char') code += 'char '+word[3]+'['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'int') code += 'int '+word[3]+'['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'bool') code += 'bool '+word[3]+'['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'float') code += 'float '+word[3]+'['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'double') code += 'double '+word[3]+'['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'long') code += 'long '+word[3]+'['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'string') code += 'char '+word[3]+'['+word[1]+']['+word[2]+'][10000];'+'\n'+'\t'.repeat(loop);
+
+
+                    // for input loop
+                    code += 'for(int i=0 ; i < '+word[1]+' ; ++i ){\n\t'+'\t'.repeat(loop);
+                    code += 'for(int j=0 ; j < '+word[2]+' ; ++j ){\n\t\t'+'\t'.repeat(loop);
+                    if (word[0] === 'char') code += 'cin>>'+word[2]+'[i][j];'+ '\n';
+                    else if (word[0] === 'int') code += 'cin>>'+word[2]+'[i][j];'+ '\n';
+                    else if (word[0] === 'bool') code += 'cin>>'+word[2]+'[i][j];'+ '\n';
+                    else if (word[0] === 'float') code += 'cin>>'+word[2]+'[i][j];'+ '\n';
+                    else if (word[0] === 'double') code += 'cin>>'+word[2]+'[i][j];'+ '\n';
+                    else if (word[0] === 'long') code += 'cin>>'+word[2]+'[i][j];'+ '\n';
+                    else if (word[0] === 'string') code += 'cin>>'+word[2]+'[i][j];'+ '\n';
+                    code += '\t'.repeat(loop)+ '\t}\n';
+                    code += '\t'.repeat(loop)+ '}\n';
+
+
+
+                } else if (line.substring(0,8) === 'function'){
+                    var word = line.substring(9,line.length-1).split(',');
+                    // Function(returntype,return-variable,name,param1-type,param1-name,param2-type,param2-name ….)
+
+                    if (word[0] === 'void'){
+                        code_upper += 'void '+word[1]+'(';
+                        var i;
+                        for(i=2;i<word.length-2;i+=2) code_upper += word[i]+' '+word[i+1]+', ';
+                        code_upper += word[i]+' '+word[i+1];
+                        code_upper += '){\n\t//Enter Your Code Here\n}';
+                    } else{
+                        code_upper += word[0]+' '+word[2]+'(';
+                        var i;
+                        for(i=3;i<word.length-2;i+=2) code_upper += word[i]+' '+word[i+1]+', ';
+                        code_upper += word[i]+' '+word[i+1];
+                        code_upper += '){\n\t//Enter Your Code Here\n\treturn '+word[1]+';\n}';
+                    }
+                    code_upper += '\n';
+
+                } else if (line.substring(0,4) === 'loop'){
+                    var word = line.substring(5,line.length-1).split(',');
+                    code += 'for(int '+loop_var[loop]+' = 0; '+loop_var[loop]+' < '+word[0]+' ; ++'+loop_var[loop]+' ){\n';
+                    loop++;
+                } else if (line.substring(0,6) === 'invoke'){
+                    var word = line.substring(7,line.length-1).split(',');
+                    if (word[0] === 'void'){
+                        code += word[1]+'(';
+                        var i;
+                        for (i=2;i<word.length-1;++i) code +=  word[i]+',';
+                        code += word[i]+');';
+                    } else {
+                        code += word[0] +' ' +word[1]+' = '+word[2]+'(';
+                        var i;
+                        for (i=3;i<word.length-1;++i) code +=  word[i]+',';
+                        code += word[i]+');';
+                    }
+                    code += '\n';
+
+                } else if (line === 'endloop'){
+                    loop--;
+                    code += '\r'+'\t'.repeat(loop)+'}\n';
+
+                }
+            }
+            return code_upper + code + 'return 0;\n}';
+        }
+        function generateJava(string){
+            string = string.split('\n');
+            var code='public static void main(String args[]){\n';
+            var code_upper='import java.util.*;\nimport java.io.*;\npublic class Solution{\n';
+            var line;
+            var loop=0;
+            var loop_var = {0:'i',1:'j',2:'k',3:'l',4:'m',5:'m'};
+            for(var i=0;i<string.length;++i){
+                line = string[i];
+                code += '\t'.repeat(loop);
+
+                // Reading Normal Variable
+                if (line.substring(0,4) === 'char'){
+                    code += 'char '+line.substring(5,line.length-1)+';\n'+'\t'.repeat(loop)+   line.substring(5,line.length-1) + ' = in.nextChar();'+ '\n';
+                } else if (line.substring(0,4) === 'bool'){
+                    code += 'boolean '+line.substring(5,line.length-1)+';\n'+'\t'.repeat(loop)+  line.substring(5,line.length-1) + ' = in.nextBoolean();'+ '\n';
+                } else if (line.substring(0,3) === 'int'){
+                    code += 'int '+line.substring(4,line.length-1)+';\n'+'\t'.repeat(loop)+   line.substring(4,line.length-1) + ' = in.nextInt();'+ '\n';
+                } else if (line.substring(0,5) === 'float'){
+                    code += 'float '+line.substring(6,line.length-1)+';\n'+'\t'.repeat(loop)+   line.substring(6,line.length-1) + ' = in.nextFloat();'+ '\n';
+                } else if (line.substring(0,4) === 'long'){
+                    code += 'long '+line.substring(5,line.length-1)+';\n'+'\t'.repeat(loop)+   line.substring(5,line.length-1) + ' = in.nextLong();'+ '\n';
+                } else if (line.substring(0,6) === 'string'){
+                    code += 'String '+line.substring(7,line.length-1)+';\n'+'\t'.repeat(loop)+  line.substring(7,line.length-1) + ' = in.nextLine();'+ '\n';
+                } else if (line.substring(0,6) === 'double'){
+                    code += 'double '+line.substring(7,line.length-1)+';\n'+'\t'.repeat(loop)+   line.substring(7,line.length-1) + ' = in.nextDouble();'+ '\n';
+
+                    // Printing Variable
+                } else if (line.substring(0,5) === 'print'){
+                    var word = line.substring(6,line.length-1).split(',');
+                    if (word[0] === 'char') code += 'System.out.println('+word[1]+');'+ '\n';
+                    else if (word[0] === 'int') code += 'System.out.println('+word[1]+');'+ '\n';
+                    else if (word[0] === 'bool')code += 'System.out.println('+word[1]+');'+ '\n';
+                    else if (word[0] === 'float') code += 'System.out.println('+word[1]+');'+ '\n';
+                    else if (word[0] === 'double') code += 'System.out.println('+word[1]+');'+ '\n';
+                    else if (word[0] === 'long') code += 'System.out.println('+word[1]+');'+ '\n';
+                    else if (word[0] === 'string') code += 'System.out.println('+word[1]+');'+ '\n';
+
+                    else if (word[0] === 'array') {
+                        // Print(array,datatype,size,variablename)
+                        code += 'for(int i=0 ; i < '+word[2]+' ;++i){\n\t';
+                        if (word[1] === 'char') code += 'System.out.println('+word[3]+'[i]);'+ '\n';
+                        else if (word[1] === 'int') code += 'System.out.println('+word[3]+'[i]);'+ '\n';
+                        else if (word[1] === 'bool') code += 'System.out.println('+word[3]+'[i]);'+ '\n';
+                        else if (word[1] === 'float') code += 'System.out.println('+word[3]+'[i]);'+ '\n';
+                        else if (word[1] === 'double') code += 'System.out.println('+word[3]+'[i]);'+ '\n';
+                        else if (word[1] === 'long') code += 'System.out.println('+word[3]+'[i]);'+ '\n';
+                        else if (word[1] === 'string') code += 'System.out.println('+word[3]+'[i]);'+ '\n';
+                        code += '}\n';
+                    }
+                    else if (word[0] === '2darray') {
+                        //  Print(2darray,datatype,row,col,variablename)
+                        code += 'for(int i=0 ; i < '+word[2]+' ; ++i ){\n\t';
+                        code += 'for(int j=0 ; j < '+word[3]+' ; ++j ){\n\t\t';
+                        if (word[1] === 'char') code += 'System.out.println('+word[4]+'[i][j]);'+ '\n';
+                        else if (word[1] === 'int') code += 'System.out.println('+word[4]+'[i][j]);'+ '\n';
+                        else if (word[1] === 'bool') code += 'System.out.println('+word[4]+'[i][j]);'+ '\n';
+                        else if (word[1] === 'float') code += 'System.out.println('+word[4]+'[i][j]);'+ '\n';
+                        else if (word[1] === 'double') code += 'System.out.println('+word[4]+'[i][j]);'+ '\n';
+                        else if (word[1] === 'long') code += 'System.out.println('+word[4]+'[i][j]);'+ '\n';
+                        else if (word[1] === 'string') code += 'System.out.println('+word[4]+'[i][j]);'+ '\n';
+                        code += '\t}\n';
+                        code += '}\n';
+
+                    }
+
+                    //  Reading Array
+                } else if (line.substring(0,5) === 'array'){
+                    var word = line.substring(6,line.length-1).split(',');
+                    // Array(datatype,size,variablename)
+                    // declare variable
+                    if (word[0] === 'char') code += 'char '+word[2]+' = new char['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'int') code += 'int '+word[2]+' = new int['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'bool') code += 'bool '+word[2]+' = new boolean['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'float') code += 'float '+word[2]+' = new float['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'double') code += 'double '+word[2]+' = new double['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'long') code += 'long '+word[2]+' = new double['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'string') code += 'String '+word[2]+' = new String['+word[1]+'];'+'\n'+'\t'.repeat(loop);
+
+
+                    // for input loop
+                    code += 'for(int i=0 ; i < '+word[1]+' ; ++i ){\n\t'+'\t'.repeat(loop);
+                    if (word[0] === 'char') code += word[2]+'[i] = in.nextChar();'+ '\n';
+                    else if (word[0] === 'int') code += word[2]+'[i] = in.nextInt();'+ '\n';
+                    else if (word[0] === 'bool') code += word[2]+'[i] = in.nextBoolean();'+ '\n';
+                    else if (word[0] === 'float') code += word[2]+'[i] = in.nextFloat();'+ '\n';
+                    else if (word[0] === 'double') code += word[2]+'[i] = in.nextDouble();'+ '\n';
+                    else if (word[0] === 'long') code += word[2]+'[i] = in.nextLong();'+ '\n';
+                    else if (word[0] === 'string') code += word[2]+'[i] = in.nextLine();'+ '\n';
+                    code += '\t'.repeat(loop) + '}\n';
+
+                } else if (line.substring(0,7) === '2darray'){
+                    var word = line.substring(8,line.length-1).split(',');
+
+
+                    // 2dArray(datatype,row,col,variablename)
+                    // declare variable
+                    if (word[0] === 'char') code += 'char '+word[3]+' = new char['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'int') code += 'int '+word[3]+' = new int['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'bool') code += 'bool '+word[3]+' = new boolean['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'float') code += 'float '+word[3]+' = new float['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'double') code += 'double '+word[3]+' = new double['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'long') code += 'long '+word[3]+' = new long['+word[1]+']['+word[2]+'];\n'+'\t'.repeat(loop);
+                    else if (word[0] === 'string') code += 'char '+word[3]+' = new String['+word[1]+']['+word[2]+'][10000];'+'\n'+'\t'.repeat(loop);
+
+
+                    // for input loop
+                    code += 'for(int i=0 ; i < '+word[1]+' ; ++i ){\n\t'+'\t'.repeat(loop);
+                    code += 'for(int j=0 ; j < '+word[2]+' ; ++j ){\n\t\t'+'\t'.repeat(loop);
+                    if (word[0] === 'char') code += word[2]+'[i][j] = in.nextChar();'+ '\n';
+                    else if (word[0] === 'int') code += word[2]+'[i][j] = in.nextInt();'+ '\n';
+                    else if (word[0] === 'bool') code += word[2]+'[i][j] = in.nextBoolean();'+ '\n';
+                    else if (word[0] === 'float') code += word[2]+'[i][j] = in.nextFloat();'+ '\n';
+                    else if (word[0] === 'double') code += word[2]+'[i][j] = in.nextDouble();'+ '\n';
+                    else if (word[0] === 'long') code += word[2]+'[i][j] = in.nextLong();'+ '\n';
+                    else if (word[0] === 'string') code += word[2]+'[i][j] = in.nextLine();'+ '\n';
+                    code += '\t'.repeat(loop)+ '\t}\n';
+                    code += '\t'.repeat(loop)+ '}\n';
+
+
+
+                } else if (line.substring(0,8) === 'function'){
+                    var word = line.substring(9,line.length-1).split(',');
+                    // Function(returntype,return-variable,name,param1-type,param1-name,param2-type,param2-name ….)
+
+                    if (word[0] === 'void'){
+                        code_upper += 'void '+word[1]+'(';
+                        var i;
+                        for(i=2;i<word.length-2;i+=2) code_upper += word[i]+' '+word[i+1]+', ';
+                        code_upper += word[i]+' '+word[i+1];
+                        code_upper += '){\n\t//Enter Your Code Here\n}';
+                    } else{
+                        code_upper += word[0]+' '+word[2]+'(';
+                        var i;
+                        for(i=3;i<word.length-2;i+=2) code_upper += word[i]+' '+word[i+1]+', ';
+                        code_upper += word[i]+' '+word[i+1];
+                        code_upper += '){\n\t//Enter Your Code Here\n\treturn '+word[1]+';\n}';
+                    }
+                    code_upper += '\n';
+
+                } else if (line.substring(0,4) === 'loop'){
+                    var word = line.substring(5,line.length-1).split(',');
+                    code += 'for(int '+loop_var[loop]+' = 0; '+loop_var[loop]+' < '+word[0]+' ; ++'+loop_var[loop]+' ){\n';
+                    loop++;
+                } else if (line.substring(0,6) === 'invoke'){
+                    var word = line.substring(7,line.length-1).split(',');
+                    if (word[0] === 'void'){
+                        code += word[1]+'(';
+                        var i;
+                        for (i=2;i<word.length-1;++i) code +=  word[i]+',';
+                        code += word[i]+');';
+                    } else {
+                        code += word[0] +' ' +word[1]+' = '+word[2]+'(';
+                        var i;
+                        for (i=3;i<word.length-1;++i) code +=  word[i]+',';
+                        code += word[i]+');';
+                    }
+                    code += '\n';
+
+                } else if (line === 'endloop'){
+                    loop--;
+                    code += '\r'+'\t'.repeat(loop)+'}\n';
+                }
+            }
+            return code_upper + code + '}\n}';
+        }
+
+        $('#python').click(function () {
+            $('#word2').val(generatePython($('#word').val()));
+        });
+        $('#c').click(function () {
+            $('#word2').val(generateC($('#word').val()));
+        });
+        $('#cpp').click(function () {
+            $('#word2').val(generateCpp($('#word').val()));
+        });
+        $('#java').click(function () {
+            $('#word2').val(generateJava($('#word').val()));
+        });
+
+    });
+</script>
+</body>
+</html>

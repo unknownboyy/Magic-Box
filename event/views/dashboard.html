@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/static/assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="/static/assets/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>
+        Question ?
+    </title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
+    <!--     Fonts and icons     -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+    <!-- CSS Files -->
+    <link href="/static/assets/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
+    <!-- CSS Just for demo purpose, don't include it in your project -->
+    <link href="/static/assets/demo/demo.css" rel="stylesheet" />
+    <style>
+        select,option{
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class="">
+<input type="hidden" value="<%= msg %>" id="status">
+        <div class="content">
+            <div class="container-fluid">
+
+
+                <% if(msg == '0'){ %>
+
+
+                <div class="row">
+                    <div class="col-8 offset-2">
+                        <div class="card">
+                            <div class="card-header card-header-success">
+                                <h4 class="card-title">Test Submitted !!</h4>
+                                <p class="card-category">Click <a href="/scoreboard">Here</a> For Scoreboard</p>
+                            </div>
+                            <div class="card-body table-responsive">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <% }else if(msg == '2') { %>
+
+
+                <div class="row">
+                    <div class="col-8 offset-2">
+                        <div class="card">
+                            <div class="card-header card-header-danger">
+                                <h4 class="card-title">Contest Ended !!</h4>
+                                <p class="card-category">Click <a href="/scoreboard">Here</a> For Scoreboard</p>
+                            </div>
+                            <div class="card-body table-responsive">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <% }else if(msg == '3') { %>
+
+
+                <div class="row" id="timer" data-cap="abcd">
+                    <div class="col-8 offset-2">
+                        <div class="card">
+                            <div class="card-header card-header-danger">
+                                <h4 class="card-title">Contest Not Started !!</h4>
+                                <p class="card-category">
+                                    <span>
+                                    Time to Start: &nbsp;
+                                    <% var nn = new Date(n); var a= new Date(t);%>
+                                    <span id="hour"><%= a.getHours()-nn.getHours() %></span>
+                                    :
+                                    <span id="minute"><%= a.getMinutes()-nn.getMinutes() %> </span>
+                                    :
+                                    <span id="second"><%= a.getSeconds()-nn.getSeconds() %></span>
+                                </span>
+                                </p>
+                            </div>
+                            <div class="card-body table-responsive">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <% } else { %>
+
+
+
+                <div class="row">
+                    <div class="col-8 offset-2">
+                        <div class="card">
+                            <div class="card-header card-header-danger">
+                                <% var nn = new Date(n); var a= new Date(aim);%>
+                                <h4 class="card-title">Time Left:<span>
+                                    <span id="hour"><%= a.getHours()-nn.getHours() %></span>
+                                    :
+                                    <span id="minute"><%= a.getMinutes()-nn.getMinutes() %> </span>
+                                    :
+                                    <span id="second"><%= a.getSeconds()-nn.getSeconds() %></span>
+                                </span></h4>
+                            </div>
+                            <div class="card-body table-responsive">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <form action="/quiz" method="post" id="quizform">
+
+                <!--Common-->
+                <div class="row">
+                    <div class="col-10 offset-1">
+                        <div class="card">
+                            <div class="card-header card-header-tabs card-header-primary">
+                                        <span class="nav-tabs-title">Question:</span>
+                                        <ul class="nav nav-tabs mytabs" data-tabs="tabs">
+
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#que" data-toggle="tab">
+                                                   <i class="badge badge-pill badge-danger" id="que_badge">1</i>
+                                                    <div class="ripple-container"></div>
+                                                </a>
+                                            </li>
+
+
+
+
+
+                                        </ul>
+
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content" id="content">
+
+                                    <div class="tab-pane" id="que">
+
+
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="bmd-label-floating">Statement</label>
+                                                    <br>
+                                                    <input type="hidden" id="domain_id" value="" class="form-control">
+                                                    <span class="mystatement">Statement</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <input type="hidden" class="answer" value="0" id="answer">
+
+                                        <table class="table text-center">
+                                            <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input class="form-check-input optiona"  type="checkbox" value="1">
+                                                            <span class="form-check-sign">
+                                    <span class="check"></span>
+                                  </span>
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <label class="form-control a">A. &nbsp;Option A</label>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input class="form-check-input optionb"  type="checkbox" value="2">
+                                                            <span class="form-check-sign">
+                                    <span class="check"></span>
+                                  </span>
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <label class="form-control b">B. &nbsp;Option B</label>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input class="form-check-input optionc"  type="checkbox" value="3">
+                                                            <span class="form-check-sign">
+                                    <span class="check"></span>
+                                  </span>
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <label class="form-control c">C. &nbsp;Option C</label>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input class="form-check-input optiond" type="checkbox"  value="4">
+                                                            <span class="form-check-sign">
+                                    <span class="check"></span>
+                                  </span>
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <label class="form-control d">D. &nbsp;Option D</label>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input class="form-check-input optione" type="checkbox"  value="5">
+                                                            <span class="form-check-sign">
+                                    <span class="check"></span>
+                                  </span>
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <label class="form-control e">E. &nbsp;Option E</label>
+                                                </td>
+
+                                            </tr>
+
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+
+
+
+                                    <button type="button" data-cap="0" class="btn btn-primary pull-right confirmBtn">Confirm</button>
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+                    <button type="submit" class="btn btn-info col-12">Submit Test</button>
+
+
+
+                </form>
+
+
+
+                <% } %>
+
+
+
+            </div>
+        </div>
+
+
+</div>
+
+<!--   Core JS Files   -->
+<script src="/static/assets/js/core/jquery.min.js"></script>
+<script src="/static/assets/js/core/popper.min.js"></script>
+<script src="/static/assets/js/core/bootstrap-material-design.min.js"></script>
+<script src="/static/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+<!-- Plugin for the momentJs  -->
+<script src="/static/assets/js/plugins/moment.min.js"></script>
+<!--  Plugin for Sweet Alert -->
+
+<script src="/static/assets/js/plugins/jquery.validate.min.js"></script>
+<!-- Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
+<script src="/static/assets/js/plugins/jquery.bootstrap-wizard.js"></script>
+
+<!--	Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
+<script src="/static/assets/js/plugins/bootstrap-tagsinput.js"></script>
+
+<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+<script src="/static/assets/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
+
+<script src="/static/scripts/event.js"></script>
+</body>
+
+</html>
