@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <body>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <script>
+        var socket = io();
+        </script>
+        <input type="text" id="linkInput" style="width: 100%;" placeholder="Enter Video URL here">    
+
+    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+    <div id="player"></div>
+
+
+    <script>
+      // 2. This code loads the IFrame Player API code asynchronously.
+      var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // 3. This function creates an <iframe> (and YouTube player)
+      //    after the API code downloads.
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+          height: parseInt(window.innerHeight*0.95) ,
+          width: parseInt(window.innerWidth*0.95) ,
+          videoId: 'M7lc1UVf-VE',
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange,
+            'onError' : onError
+          }
+        });
+      }
+
+      function onError(event){
+          console.log(event,"error");
+      }
+
+      // 4. The API will call this function when the video player is ready.
+      function onPlayerReady(event) {
+        event.target.playVideo();
+      }
+
+      // 5. The API calls this function when the player's state changes.
+      //    The function indicates that when playing a video (state=1),
+      //    the player should play for six seconds and then stop.
+      var done = false;
+      function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING && !done) {
+          // setTimeout(stopVideo, 6000);
+          done = true;
+        }
+      }
+      function stopVideo() {
+        player.stopVideo();
+      }
+    </script>
+
+<script>
+
+        function getProperUrl(link){
+            var vIndex = link.indexOf("v=")+2;
+            var properUrl = link.substring(vIndex,vIndex+11);
+            return properUrl;
+        }
+        
+        $(document).ready(function(){
+            $("#linkInput").keyup(function(event){
+                if(event.keyCode == 13){
+                    var link = $(this).val();
+                    link = getProperUrl(link);
+                    socket.emit("link_change",link);
+                    console.log(link,"link");
+                    player.loadVideoById(link);
+                    console.log("player video link",player.getVideoUrl());
+                }
+            });
+        
+            socket.on("link_change",function(msg){
+                console.log(msg,"link");
+                player.loadVideoById(msg);
+            })
+        });
+        </script>
+  </body>
+</html>
